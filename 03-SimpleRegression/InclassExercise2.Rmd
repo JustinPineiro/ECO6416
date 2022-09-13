@@ -21,6 +21,11 @@ library(tidyverse)
 This dataset was obtained from FRED which shows the share of total net worth held by the top 1%. It is represented over time.
 
 ```{r wealth}
+Wealth1percent <- read_excel("~/Documents/ECO6416/ECO6416/Data/Wealth1percent.xlsx")
+View(Wealth1percent) 
+col_types = c("date","numeric","numeric")
+
+colnames(Wealth1percent)[3] <- "TimeCounter"
 
 ```
 
@@ -30,7 +35,11 @@ This gives us a range of data from the third quarter of 1989 to the first quarte
 
 
 ```{r wealthplot , message=F}
-
+plot(Wealth1percent$quarter, Wealth1percent$Share,
+     main = "Scatterplot of 1%",
+     xlab = "TimeCounter",
+     ylab = "Share")
+abline(lm(Share ~ TimeCounter, data = Wealth1percent),lty = 2, col = "green")
 ```
 
 
@@ -39,7 +48,11 @@ This gives us a range of data from the third quarter of 1989 to the first quarte
 We can see the trend in an upwards manner, let's see what the quarterly change in slope is:
 
 ```{r wealth regression}
+wealthregression <- lm(Share ~ TimeCounter, data = Wealth1percent)
 
+wealthregression$coefficients[2]
+
+summary(wealthregression)
 ```
 
 in this case, the share of wealth held by the top 1% is increasing by 0.05% each quarter.
@@ -49,7 +62,9 @@ in this case, the share of wealth held by the top 1% is increasing by 0.05% each
 Suppose we want to predict the share of wealth 2 quarters form now:
 
 ```{r}
+newpredictions <- data.frame(TimeCounter = 133)
 
+predict(wealthregression, newdata = newpredictions, interval = "confidence", level = .8)
 ```
 
 
